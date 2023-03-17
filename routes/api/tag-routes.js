@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     const tags = await Tag.findAll({ include: { model: Product, through: ProductTag } });
     res.json(tags);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -23,7 +23,7 @@ router.get('/:id', async (req, res) => {
     const tag = await Tag.findByPk(req.params.id, { include: { model: Product, through: ProductTag } });
     res.json(tag);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ error: err.message });
   }
 });
 

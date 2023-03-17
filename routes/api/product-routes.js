@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
   try {
-    const products = await Product.findAll({ include: [Category, { model: Tag, through: ProductTag }] });
+    const products = await Product.findAll({ include: [Category, { model:  Tag, as: 'products_tags', through: ProductTag }] });
     res.json(products);
   } catch (err) {
     res.status(500).json(err);
@@ -21,7 +21,7 @@ router.get('/:id', async (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
   try {
-    const product = await Product.findByPk(req.params.id, { include: [Category, { model: Tag, through: ProductTag }] });
+    const product = await Product.findByPk(req.params.id, { include: [Category, { model:  Tag, as: 'products_tags', through: ProductTag }] });
     res.json(product);
   } catch (err) {
     res.status(500).json(err);
@@ -106,6 +106,9 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', async (req, res) => {
   // delete one product by its `id` value
   try {
+    // First, delete associated product tags
+    await ProductTag.destroy({ where: { product_id: req.params.id } });
+
     await Product.destroy({ where: { id: req.params.id } });
     res.status(200).json({ message: 'Product deleted' });
   } catch (err) {
